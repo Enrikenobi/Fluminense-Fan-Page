@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Funcionários</title>
+</head>
+<body>
+
+    <form id="formulario">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required><br>
+
+        <label for="idade">Idade:</label>
+        <input type="number" id="idade" required><br>
+
+        <label for="cargo">Cargo:</label>
+        <select id="cargo" required>
+            <option value="gerente">Gerente</option>
+            <option value="desenvolvedor">Desenvolvedor</option>
+        </select><br>
+
+        <div id="departamentoContainer" style="display:none;">
+            <label for="departamento">Departamento:</label>
+            <input type="text" id="departamento">
+        </div>
+
+        <div id="linguagemContainer" style="display:none;">
+            <label for="linguagem">Linguagem:</label>
+            <input type="text" id="linguagem">
+        </div>
+
+        <button type="button" onclick="criarFuncionario()">Criar Funcionário</button>
+    </form>
+
+    <div id="resultado"></div>
+
+    <script>
+        class Funcionario {
+            constructor(nome, idade, cargo) {
+                this.nome = nome;
+                this.idade = idade;
+                this.cargo = cargo;
+            }
+
+            seApresentar() {
+                return `Olá, meu nome é ${this.nome} e eu sou um ${this.cargo}.`;
+            }
+
+            trabalhar() {
+                return `Estou realizando minhas tarefas como ${this.cargo}.`;
+            }
+        }
+
+        class Gerente extends Funcionario {
+            constructor(nome, idade, departamento) {
+                super(nome, idade, 'Gerente');
+                this.departamento = departamento;
+            }
+
+            gerenciar() {
+                return `Estou gerenciando o departamento de ${this.departamento}.`;
+            }
+        }
+
+        class Desenvolvedor extends Funcionario {
+            constructor(nome, idade, linguagem) {
+                super(nome, idade, 'Desenvolvedor');
+                this.linguagem = linguagem;
+            }
+
+            programar() {
+                return `Estou programando em ${this.linguagem}.`;
+            }
+        }
+
+        function criarFuncionario() {
+            try {
+                const nome = document.getElementById('nome').value;
+                const idade = document.getElementById('idade').value;
+                const cargo = document.getElementById('cargo').value;
+
+                if (!nome || !idade || !cargo) {
+                    throw new Error("Por favor, preencha todos os campos.");
+                }
+
+                let funcionario;
+
+                if (cargo === 'gerente') {
+                    const departamento = document.getElementById('departamento').value;
+                    funcionario = new Gerente(nome, idade, departamento);
+                } else if (cargo === 'desenvolvedor') {
+                    const linguagem = document.getElementById('linguagem').value;
+                    funcionario = new Desenvolvedor(nome, idade, linguagem);
+                }
+
+                exibirResultado(funcionario.seApresentar() + "<br>" + funcionario.trabalhar());
+
+                if (funcionario instanceof Gerente) {
+                    exibirResultado(funcionario.gerenciar());
+                } else if (funcionario instanceof Desenvolvedor) {
+                    exibirResultado(funcionario.programar());
+                }
+            } catch (error) {
+                exibirErro(error.message);
+            }
+        }
+
+        function exibirResultado(mensagem) {
+            document.getElementById('resultado').innerHTML = mensagem;
+        }
+
+        function exibirErro(mensagem) {
+            alert("Erro: " + mensagem);
+        }
+
+        document.getElementById('cargo').addEventListener('change', function () {
+            const departamentoContainer = document.getElementById('departamentoContainer');
+            const linguagemContainer = document.getElementById('linguagemContainer');
+
+            if (this.value === 'gerente') {
+                departamentoContainer.style.display = 'block';
+                linguagemContainer.style.display = 'none';
+            } else if (this.value === 'desenvolvedor') {
+                departamentoContainer.style.display = 'none';
+                linguagemContainer.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>
